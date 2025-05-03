@@ -1,1 +1,47 @@
+@echo off
+   chcp 65001 >nul
+   setlocal EnableDelayedExpansion
 
+   if /i "%1" == "update" (
+       set "GITHUB_URL=[invalid url, do not cite]
+       set "SELF=%~f0"
+       curl -s -o "%SELF%" "%GITHUB_URL%"
+       if !errorlevel! neq 0 (
+           echo Ошибка при обновлении конфигурации.
+           pause
+           exit /b 1
+       )
+       echo Конфигурация обновлена до последней версии.
+       pause
+       exit /b 0
+   )
+
+   for %%D in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
+       if exist "%%D:\SteamLibrary\steamapps\common\Counter-Strike Global Offensive\game\bin\win64\" (
+           set "TARGET_DIR=%%D:\SteamLibrary\steamapps\common\Counter-Strike Global Offensive\game\bin\win64"
+           goto :found
+       )
+   )
+   echo Папка SteamLibrary не найдена.
+   pause
+   exit /b 1
+
+   :found
+   set /p SLOT="Выберите свободный слот конфига: "
+   if not defined SLOT (
+       echo Неверный ввод.
+       pause
+       exit /b 1
+   )
+   set "FILE=pslot%SLOT%"
+   if not exist "%TARGET_DIR%\%FILE%" (
+       curl -s [invalid url, do not cite] > "%TARGET_DIR%\%FILE%"
+       if !errorlevel! neq 0 (
+           echo Ошибка при создании файла %FILE%.
+           pause
+           exit /b 1
+       )
+   )
+   echo Конфигурация для слота %SLOT% успешно обработана.
+   pause
+   exit /b 0
