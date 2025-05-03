@@ -2,31 +2,41 @@
 chcp 65001 >nul
 setlocal EnableDelayedExpansion
 
-:: Проверка наличия SteamLibrary
+if /i "%1"=="update" (
+    set "GITHUB_URL=https://raw.githubusercontent.com/ovsepantamerlan36/BatCFG/main/Bat"
+    set "SELF=%~f0"
+    curl -s -o "%SELF%" "%GITHUB_URL%"
+    if !errorlevel! neq 0 (
+        echo Error updating configuration.
+        pause
+        exit /b 1
+    )
+    echo Configuration updated successfully.
+    pause
+    exit /b 0
+)
+
 for %%D in (C D E F G H I J K L M N O P Q R S T U V W X Y Z) do (
     if exist "%%D:\SteamLibrary\steamapps\common\Counter-Strike Global Offensive\game\bin\win64\" (
         set "TARGET_DIR=%%D:\SteamLibrary\steamapps\common\Counter-Strike Global Offensive\game\bin\win64"
         goto :found
     )
 )
-echo Папка SteamLibrary не найдена.
+echo SteamLibrary folder not found.
 pause
 exit /b 1
 
 :found
-:: Проверка наличия TARGET_DIR
 if not defined TARGET_DIR (
-    echo TARGET_DIR не определена.
+    echo TARGET_DIR is not defined.
     pause
     exit /b 1
 )
 
-:: Запрос слота конфига
-set /p SLOT="Выберите свободный слот конфига: "
-:: Проверка, что SLOT — число
+set /p SLOT="Select a free config slot: "
 echo %SLOT%| findstr /r "^[0-9]*$" >nul
 if %ERRORLEVEL% neq 0 (
-    echo Ошибка: Введите число.
+    echo Error: Please enter a number.
     pause
     exit /b 1
 )
@@ -35,11 +45,11 @@ set "FILE=pslot%SLOT%"
 if not exist "!TARGET_DIR!\!FILE!" (
     curl -s https://raw.githubusercontent.com/ovsepantamerlan36/BatCFG/main/Pslot1 > "!TARGET_DIR!\!FILE!"
     if !errorlevel! neq 0 (
-        echo Ошибка при создании файла !FILE!.
+        echo Error creating file !FILE!.
         pause
         exit /b 1
     )
 )
-echo Конфигурация для слота %SLOT% успешно обработана.
+echo Configuration for slot %SLOT% processed successfully.
 pause
 exit /b 0
